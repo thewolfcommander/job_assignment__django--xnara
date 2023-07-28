@@ -108,8 +108,7 @@ class PackDataViewSet(ModelViewSet):
         if not customer_id:
             return Response({
                 'error': 'Customer ID not provided',
-                'status':status.HTTP_400_BAD_REQUEST,
-            })
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             # Logging the customer_id
