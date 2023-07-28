@@ -28,6 +28,12 @@ def get_traceback_in_json() -> str:
     return json.dumps(tb_dict, indent=4)
 
 
+def make_customer_log(customer_log, message) -> CustomerLog:
+    customer_log.error_message = message
+    customer_log.save()
+
+    return customer_log
+
 
 class PackDataViewSet(ModelViewSet):
     serializer_class = CustomerPayloadSerializer
@@ -40,12 +46,15 @@ class PackDataViewSet(ModelViewSet):
         """
         try:
             pack = requests.get(pack_url + f'?customer_id={customer_id}').json()
+            if len(pack) == 0:
+                make_customer_log(customer_log, f'Invalid Customer ID for the Database --- {customer_id}')  # noqa: E501
+                return []
+
             parsed_pack = [f"{item['ingrediet']} {item['quantity']}{item['unit']}" for item in pack[0]['pack_data']]  # noqa: E501
 
             return parsed_pack
         except Exception:
-            customer_log.error_msg = get_traceback_in_json()
-            customer_log.save()
+            make_customer_log(customer_log, get_traceback_in_json())
             return None
 
     def create(self, request, *args, **kwargs):
@@ -62,8 +71,7 @@ class PackDataViewSet(ModelViewSet):
             customer_log = CustomerLog.objects.create(customer_id=customer_id)
         except Exception:
             # Log the error
-            customer_log.error_msg = self.get_traceback_in_json()
-            customer_log.save()
+            make_customer_log(customer_log, get_traceback_in_json())
             return Response({"error": "Failed to fetch data"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)  # noqa: E501
 
         # Fetch pack1 and pack2 data
