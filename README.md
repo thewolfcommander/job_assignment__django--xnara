@@ -18,7 +18,7 @@ map and respond with the combined data.
 
 # Sample API Response
 
-![Alt text](image.png)
+![Check and download the image attached if not loading](image.png)
 
 
 # Task Details
@@ -149,4 +149,4 @@ For testing I have written some basic test cases that should be must in order to
 All the test cases can be found in `core/tests.py`.
 
 ### Test Results
-![Alt text](image-1.png)
+![Check and download the image attached if not loading](image-1.png)
