@@ -13,3 +13,8 @@
 | Swagger Integration | Set up Swagger for API documentation. | 1\. Configure Swagger/OpenAPI in `urls.py`.<br> 2. Add path for Swagger UI. |
 | Exception & Logging | Ensure robust error handling and logging. | 1\. Directly log customer ID and errors in the view method. |
 | Testing & Review | Test API and review for any issues. | 1\. Review code structure and logic.<br> 2. Run database migrations.<br> 3. Start the server and test API using Postman/Swagger. |
+
+
+# Sample API Response
+
+![Alt text](image.png)
