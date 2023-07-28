@@ -1,6 +1,7 @@
 import requests
 import traceback
 import sys
+import logging
 import json
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -10,6 +11,9 @@ from decouple import config
 
 from .models import CustomerLog
 from .serializers import CustomerPayloadSerializer
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_traceback_in_json() -> str:
@@ -29,7 +33,7 @@ def get_traceback_in_json() -> str:
 
 
 def make_customer_log(customer_log, message) -> CustomerLog:
-    customer_log.error_message = message
+    customer_log.error_msg = message
     customer_log.save()
 
     return customer_log
@@ -55,11 +59,13 @@ class PackDataViewSet(ModelViewSet):
             return parsed_pack
         except Exception:
             make_customer_log(customer_log, get_traceback_in_json())
+            logger.debug(f"\nATTENTION 001 -----\n\n {get_traceback_in_json()}")
             return None
 
     def create(self, request, *args, **kwargs):
         # Log customer_id
         customer_id = request.data.get("customer_id")
+        log_msg = 'Failed to fetch data'
 
         if not customer_id:
             return Response({
@@ -72,14 +78,16 @@ class PackDataViewSet(ModelViewSet):
         except Exception:
             # Log the error
             make_customer_log(customer_log, get_traceback_in_json())
-            return Response({"error": "Failed to fetch data"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)  # noqa: E501
+            logger.debug(f"\nATTENTION 002 -----\n\n {get_traceback_in_json()}")
+            return Response({"error": log_msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)  # noqa: E501
 
         # Fetch pack1 and pack2 data
         pack1_data = self.make_pack_request(config('PACK_1_API'), customer_id, customer_log)  # noqa: E501
         pack2_data = self.make_pack_request(config('PACK_1_API'), customer_id, customer_log)  # noqa: E501
 
         if not pack1_data or not pack2_data:
-            return Response({"error": "Failed to fetch data"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)  # noqa: E501
+            logger.debug(f"\nATTENTION 003 -----\n\n {log_msg}")
+            return Response({"error": log_msg}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)  # noqa: E501
 
         return Response({
             'id': customer_log.id,
