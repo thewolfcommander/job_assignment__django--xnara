@@ -150,3 +150,14 @@ All the test cases can be found in `core/tests.py`.
 
 ### Test Results
 ![Check and download the image attached if not loading](image-1.png)
+
+
+# Installation instructions
+
+1. Clone the repo
+2. Create Virtualenv using command - `python -m virtualenv venv`
+3. Activate the environment
+4. Install the requirements using - `pip install -r requirements.txt`. Make sure to use similar python version.
+5. Copy `.env.example` file and rename it to `.env`
+6. Migrate the server migrations - `python manage.py migrate`
+7. Run the server - `python manage.py runserver`
